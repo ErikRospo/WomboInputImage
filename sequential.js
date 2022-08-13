@@ -3,30 +3,32 @@ const Rest = require("./rest.js");
 const styles = require("./styles.js");
 const download = require("./download.js");
 const fs = require("fs");
-
+const path=require("path");
 let settings = JSON.parse(fs.readFileSync("./settings.json"))
-let quiet = settings.quiet||true;
-let inter = settings.inter||false;
-let final = settings.final||true;
+let quiet = settings.quiet;
+let inter = settings.inter;
+let final = settings.final;
 let images = [];
 let Siterations=settings.iterations
-let styleSelect = settings.style
-if (typeof styleSelect === "string") {
-  styleSelect = Array(Siterations).fill(styleSelect)
+let styless = settings.style
+if (typeof styless=== "number") {
+  styless = Array(Siterations).fill(styless)
 }
 let p = settings.inputImages
 if (typeof p === "string") {
   p = Array(Siterations).fill(p)
 } 
-let prompt = settings.prompt
-if (typeof prompt === "string") {
-  prompt = Array(Siterations).fill(prompt)
+let prompts = settings.prompt
+if (typeof prompts === "string") {
+  prompts = Array(Siterations).fill(prompts)
 }
+if (typeof quiet==="undefined"){quiet=true}
+if (typeof inter==="undefined"){inter=false}
+if (typeof final==="undefined"){final=true}
 let file_folder=settings.file_folder
 for (let n = 0; n < p.length; n++) {
   images.push(fs.readFileSync(p[n]).toString("base64"));
 }
-
 async function generate(prompt, style, prefix, input_image = false, download_dir = "./generated", iteration_ = 0) {
   function handler(data, prefix) {
     switch (data.state) {
@@ -89,21 +91,21 @@ async function generate(prompt, style, prefix, input_image = false, download_dir
 
 async function generate_sequential(prompts, styles, times, directory = Date.now()) {
   let last_image = {};
-  const download_dir = `./generated/${directory}/`
+  const download_dir = path.resolve(`./generated/${directory}/`)
   for (let n = 0; n < times; n++) {
     console.log(`${n + 1}/${times} Started`)
-    await generate(prompts[n], style, `${n + 1}: `, last_image, download_dir, n);
     last_image = {
-      image_weight: "MEDIUM",
+      image_weight: "HIGH",
       media_suffix: "jpeg",
       input_image: images[n]
     };
+    await generate(prompts[n], styles[n], `${n + 1}: `, last_image, download_dir, n);
     console.log(`${n + 1}/${times} Finished`)
 
   }
 }
 if (require.main === module) {
-  generate_sequential(prompts, styles,Siterations, file_folder);
+  generate_sequential(prompts, styless,Siterations, file_folder);
 }
 module.exports.generate = generate;
 module.exports.generate_sequential = generate_sequential;

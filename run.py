@@ -21,8 +21,6 @@ if return_code==0:
         json_file=open("settings.json", "r")
         json_data=json.load(json_file)
         csv_reader=csv.reader(csv_file)
-        # for row in csv_reader:
-            # print(row)
         timing=end_time-start_time
         timing/=60
         timing1=end_time_1-start_time_1

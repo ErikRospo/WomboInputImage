@@ -1,11 +1,9 @@
 {
     "style": 18,
-    "file_folder": "1659821437086248184",
+    "file_folder": "1660360754018103600",
     "prompt": "Cherry blossoms, over a bridge on a lake",
     "iterations": 10,
     "quiet": false,
     "inter": false,
-    "inputImages":[
-        
-    ]
+    "inputImages": []
 }

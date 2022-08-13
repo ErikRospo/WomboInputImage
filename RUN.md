@@ -7,7 +7,8 @@ To install:
 ```npm install;pip install -r requirements.txt```
 
 To run: 
-`python run.py`
+`python run.py` to run the project fully or
+`node sequential.js` to just generate images.
 
 Configuration:
 settings.json
