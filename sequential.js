@@ -4,21 +4,30 @@ const styles = require("./styles.js");
 const download = require("./download.js");
 const fs = require("fs");
 
-let settings=JSON.parse(fs.readFileSync("./settings.json"))
-let quiet = settings.quiet;
-let inter = settings.inter;
-let final = settings.final;
-let images=[];
-let p=setting.inputImages
-
-for (let n=0;n<p.length;n++) {
+let settings = JSON.parse(fs.readFileSync("./settings.json"))
+let quiet = settings.quiet||true;
+let inter = settings.inter||false;
+let final = settings.final||true;
+let images = [];
+let Siterations=settings.iterations
+let styleSelect = settings.style
+if (typeof styleSelect === "string") {
+  styleSelect = Array(Siterations).fill(styleSelect)
+}
+let p = settings.inputImages
+if (typeof p === "string") {
+  p = Array(Siterations).fill(p)
+} 
+let prompt = settings.prompt
+if (typeof prompt === "string") {
+  prompt = Array(Siterations).fill(prompt)
+}
+let file_folder=settings.file_folder
+for (let n = 0; n < p.length; n++) {
   images.push(fs.readFileSync(p[n]).toString("base64"));
 }
 
-if (typeof quiet==="undefined"){quiet=true}
-if (typeof inter==="undefined"){inter=false}
-if (typeof final==="undefined"){final=true}
-async function generate(prompt, style, prefix, input_image = false,download_dir="./generated",iteration_=0) {
+async function generate(prompt, style, prefix, input_image = false, download_dir = "./generated", iteration_ = 0) {
   function handler(data, prefix) {
     switch (data.state) {
       case "authenticated":
@@ -55,8 +64,8 @@ async function generate(prompt, style, prefix, input_image = false,download_dir=
     prompt,
     style,
     data => handler(data, prefix),
-    { final, inter,download_dir },
-    input_image,iteration_
+    { final, inter, download_dir },
+    input_image, iteration_
   );
   if (!quiet && final)
     console.log(
@@ -78,23 +87,23 @@ async function generate(prompt, style, prefix, input_image = false,download_dir=
 }
 
 
-async function generate_sequential(prompts, style, times,directory=Date.now()) {
+async function generate_sequential(prompts, styles, times, directory = Date.now()) {
   let last_image = {};
-  const download_dir=`./generated/${directory}/`
+  const download_dir = `./generated/${directory}/`
   for (let n = 0; n < times; n++) {
-    console.log(`${n+1}/${times} Started`)
-    await generate(prompts[n], style, `${n + 1}: `, last_image,download_dir,n);
+    console.log(`${n + 1}/${times} Started`)
+    await generate(prompts[n], style, `${n + 1}: `, last_image, download_dir, n);
     last_image = {
       image_weight: "MEDIUM",
       media_suffix: "jpeg",
       input_image: images[n]
     };
-    console.log(`${n+1}/${times} Finished`)
-    
+    console.log(`${n + 1}/${times} Finished`)
+
   }
 }
 if (require.main === module) {
-  generate_sequential(settings.prompt,settings.style, settings.iterations,settings.file_folder);
+  generate_sequential(prompts, styles,Siterations, file_folder);
 }
 module.exports.generate = generate;
 module.exports.generate_sequential = generate_sequential;

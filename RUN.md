@@ -24,14 +24,3 @@ if it is an array, its length must be equal to `iterations`
 `inputImages`: a path, or list of paths leading to input images.  
 must be in the `jpeg` file format  
 `iterations`: how many times to generate art.  
-`{
-    "style": 18, 
-    "file_folder": "CBOABOAL",  
-    "prompt": "Cherry blossoms, over a bridge on a lake", 
-    "iterations": 10,  
-    "quiet": false,  
-    "inter": false,  
-    "inputImages":[  
-        "./images_/1.jpg"  
-    ]  
-}`
