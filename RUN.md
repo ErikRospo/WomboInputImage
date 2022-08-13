@@ -1,0 +1,37 @@
+# Install
+Requirements:  
+[Python](https://www.python.org/downloads/)  
+[nodeJs](https://nodejs.org/en/download/)
+
+To install:
+```npm install;pip install -r requirements.txt```
+
+To run: 
+`python run.py`
+
+Configuration:
+settings.json
+`style`: the style of the generated art  
+can be a singular value, or an array  
+if it is an array, its length must be equal to `iterations`  
+see styles.js for more details  
+`file_folder`: the name of the folder the images will be generated in  
+`prompt`: the prompt used for the art  
+can be a singular value or an array  
+if it is an array, its length must be equal to `iterations`  
+`quiet`: whether to log out all details or not  
+`inter`: download the intermediate images  
+`inputImages`: a path, or list of paths leading to input images.  
+must be in the `jpeg` file format  
+`iterations`: how many times to generate art.  
+`{
+    "style": 18, 
+    "file_folder": "CBOABOAL",  
+    "prompt": "Cherry blossoms, over a bridge on a lake", 
+    "iterations": 10,  
+    "quiet": false,  
+    "inter": false,  
+    "inputImages":[  
+        "./images_/1.jpg"  
+    ]  
+}`
