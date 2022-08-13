@@ -9,8 +9,9 @@ with open(file_path,"rt") as f:
     settings = json.loads(f.read())
 
 img_array = []
-fn=[ x for x in glob.glob('./generated/'+settings['file_folder']+'/*.jpg')]
+fn=[ x for x in glob.glob('./generated/'+settings['file_folder']+'/**/*.jpg',recursive=True)]
 fn.sort()
+print(fn)
 for filename in fn: 
     img = cv2.imread(filename)
     # height, width, layers = img.shape
