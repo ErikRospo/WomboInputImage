@@ -1,0 +1,30 @@
+{
+  "transform": {
+    "affine": {
+      "x_factor": 0.95,
+      "y_factor": 0.95,
+      "x_center": 0.5,
+      "y_center": 0.5
+    },
+    "rotate": {
+      "angle": 0.2
+    }
+  },
+  "dream": {
+    "iterations": 100,
+    "iterationsPer": 10,
+    "inputPath": "sky1024px.jpg",
+    "output": {
+      "images": {
+        "path": "frames/%04d.jpg"
+      },
+      "video": {
+        "path": "res.mp4",
+        "codec": "mp4v",
+        "fps": 15
+      }
+    },
+    "octaves":4,
+    "octaveScale":1.4
+  }
+}
