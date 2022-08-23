@@ -1,4 +1,5 @@
 # imports and basic notebook setup
+from datetime import datetime
 from io import StringIO
 import os
 import numpy as np
@@ -8,6 +9,7 @@ from google.protobuf import text_format
 import json
 import caffe
 import cv2
+import time
 
 with open("settings.json","rt") as f:
     settings=json.load(f)
@@ -71,8 +73,39 @@ def make_step(net, step_size=1.5, end='inception_4c/output',
     if clip:
         bias = net.transformer.mean['data']
         src.data[:] = np.clip(src.data, -bias, 255-bias)
+
 def fancy_status():
-    print("Outer Level: "+status["topLevel"]+" Octave: "+status["octave"]+" Inner Level: "+status["innerLevel"])
+    octave=status["octave"]
+    innerLevel=status["innerLevel"]
+    outerLevel=status["topLevel"]
+    if octave==(-1,-1):
+        octaveStr="(?/?)"
+    else:
+        octaveStr="({}/{})".format(*octave)
+    if innerLevel==(-1,-1):
+        innerLevelStr="(?/?)"
+    else:
+        innerLevelStr="({}/{})".format(*innerLevel)
+    if outerLevel==(-1,-1):
+        outerLevelStr="(?/?)"
+    else:
+        outerLevelStr="({}/{})".format(*outerLevel)
+    
+    # totalIndex=int(settings["dream"]["iterations"])*int(settings['dream']['octaves'])*int(settings['dream']['iterationsPer'])
+    # #TODO: find actual value given parameters
+    # currentIndex= outerLevel[1]*octave[1]*innerLevel[1]+octave[1]*innerLevel[1]+innerLevel[1]+1
+    # print("Processing file {} ({}%)".format(currentIndex, 100*totalIndex//currentIndex), end="")
+    # print()
+    # curr_time=get_current_time_seconds()
+    # percentage=currentIndex/totalIndex
+    # left=1-percentage
+    # total_time=(curr_time/currentIndex)*totalIndex
+    # eltime=format_time(total_time*percentage) # time elapsed, in a friendly way, e.g. 00h 22m 15s
+    # remtime=format_time(total_time*left) # time remaining, again in a friendly way.
+    # tottime=format_time(total_time*percentage+total_time*left) # total time.
+    # fttime=format_time_diff(total_time*percentage+total_time*left) # finish time: MM-DD-YY HH:mm:SS 
+    print("Outer Level: "+outerLevelStr+" Octave: "+octaveStr+" Inner Level: "+innerLevelStr)
+#deepdream will have been called int(settings["dream"]["iterations"]) times.
 def deepdream(net, base_img, iter_n=10, octave_n=4, octave_scale=1.4, 
               end='inception_4c/output', clip=True, **step_params):
     # prepare base images for all octaves
@@ -83,8 +116,10 @@ def deepdream(net, base_img, iter_n=10, octave_n=4, octave_scale=1.4,
     src = net.blobs['data']
     detail = np.zeros_like(octaves[-1]) # allocate image for network-produced details
     for octave, octave_base in enumerate(octaves[::-1]):
-        status["innerLevel"]="(?/?)"
-        status["octave"]="({}/{})".format(octave+1,octave_n)
+        #this will be called int(settings["dream"]["iterations"])*octave_n
+        status["innerLevel"]=(-1,-1)
+        status["octave"]=(octave+1,octave_n)
+        # "({}/{})".format(octave+1,octave_n)
         fancy_status()
         h, w = octave_base.shape[-2:]
         if octave > 0:
@@ -95,8 +130,9 @@ def deepdream(net, base_img, iter_n=10, octave_n=4, octave_scale=1.4,
         src.reshape(1,3,h,w) # resize the network's input image size
         src.data[0] = octave_base+detail
         for i in range(iter_n):
-            status["innerLevel"]="({}/{})".format(i+1,iter_n)
+            status["innerLevel"]=(i+1,iter_n)
             fancy_status()
+            #this will be called int(settings["dream"]["iterations"])*octave_n*iter_n
             make_step(net, end=end, clip=clip, **step_params)
 
         # extract details produced on the current octave
@@ -112,10 +148,14 @@ frame_i = 0
 h, w = frame.shape[:2]
 s = 0.05 # scale coefficient
 paths=[]
+
+##at the end, i will be equal to int(settings["dream"]["iterations"])
 for i in range(int(settings['dream']['iterations'])):
-    status["topLevel"]="({}/{})".format(i+1,settings['dream']['iterations'])
-    status["octave"]="(?/?)"
-    status["innerLevel"]="(?/?)"
+    
+    status["topLevel"]=(i+1,int(settings["dream"]["iterations"]))
+    # "({}/{})".format(i+1,settings['dream']['iterations'])
+    status["octave"]=(-1,-1)
+    status["innerLevel"]=(-1,-1)
     fancy_status()
     frame = deepdream(net, frame,iter_n=int(settings['dream']['iterationsPer']),octave_n=int(settings['dream']['octaves']),octave_scale=float(settings['dream']['octaveScale']))
     fp=settings["dream"]["output"]["images"]["path"]%frame_i
