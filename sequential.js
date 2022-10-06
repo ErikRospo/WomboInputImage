@@ -29,6 +29,12 @@ let file_folder=settings.file_folder
 for (let n = 0; n < p.length; n++) {
   images.push(fs.readFileSync(p[n]).toString("base64"));
 }
+try{
+let a=fs.opendirSync("./generated") 
+}
+catch{
+  fs.mkdirSync("./generated")
+}
 async function generate(prompt, style, prefix, input_image = false, download_dir = "./generated", iteration_ = 0) {
   function handler(data, prefix) {
     switch (data.state) {

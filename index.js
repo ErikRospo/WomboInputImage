@@ -6,7 +6,7 @@ const path = require("path");
 const fs = require("fs");
 
 let paint_rest = new Rest("paint.api.wombo.ai", 100);
-let image_paint_rest = new Rest("app.wombo.art", 100);
+let image_paint_rest = new Rest("www.wombo.art", 100);
 module.exports = async function task(
   prompt,
   style,
