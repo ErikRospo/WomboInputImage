@@ -6,6 +6,7 @@
     "node-fetch": "^3.2.10"
   },
   "devDependencies": {
+    "eslint": "^8.24.0",
     "yargs": "^17.3.0"
   }
 }
