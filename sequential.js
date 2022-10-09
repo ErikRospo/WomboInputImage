@@ -1,7 +1,5 @@
 const task = require("./index.js");
-const Rest = require("./rest.js");
 const styles = require("./styles.js");
-const download = require("./download.js");
 const fs = require("fs");
 const path=require("path");
 let settings = JSON.parse(fs.readFileSync("./settings.json"));
@@ -20,8 +18,13 @@ if (typeof p === "string") {
 }
 let prompts = settings.prompt;
 if (typeof prompts === "string") {
-	prompts = Array(Siterations).fill(prompts);
-}
+	if (fs.existsSync(prompts)){
+		let x=fs.readFileSync(prompts)
+		
+		prompts=String(x).split("\n");
+	}else{
+		prompts = Array(Siterations).fill(prompts);
+	}}
 if (typeof quiet==="undefined"){quiet=true;}
 if (typeof inter==="undefined"){inter=false;}
 if (typeof final==="undefined"){final=true;}
@@ -29,11 +32,11 @@ let file_folder=settings.file_folder;
 for (let n = 0; n < p.length; n++) {
 	images.push(fs.readFileSync(p[n]).toString("base64"));
 }
-try{
+try {
 	let a=fs.opendirSync("./generated");
 	a.close();
 }
-catch{
+catch {
 	fs.mkdirSync("./generated");
 }
 async function generate(prompt, style, prefix, input_image = false, download_dir = "./generated", iteration_ = 0) {
@@ -96,8 +99,9 @@ async function generate(prompt, style, prefix, input_image = false, download_dir
 }
 
 
-async function generate_sequential(prompts, styles, times, directory = Date.now()) {
+async function generate_sequential(prompts, styles, directory = Date.now()) {
 	let last_image = {};
+	let times=prompts.length;
 	const download_dir = path.resolve(`./generated/${directory}/`);
 	for (let n = 0; n < times; n++) {
 		console.log(`${n + 1}/${times} Started`);
@@ -106,13 +110,13 @@ async function generate_sequential(prompts, styles, times, directory = Date.now(
 			media_suffix: "jpeg",
 			input_image: images[n]
 		};
-		await generate(prompts[n], styles[n], `${n + 1}: `, last_image, download_dir, n);
+		await generate(prompts[n], styles[n], `${n + 1}/${times}: `, last_image, download_dir, n);
 		console.log(`${n + 1}/${times} Finished`);
 
 	}
 }
 if (require.main === module) {
-	generate_sequential(prompts, styless,Siterations, file_folder);
+	generate_sequential(prompts, styless, file_folder);
 }
 module.exports.generate = generate;
 module.exports.generate_sequential = generate_sequential;

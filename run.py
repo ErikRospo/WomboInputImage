@@ -3,13 +3,14 @@ import csv
 import time
 import json
 print("Starting sequential.js")
+if not os.path.exists("./generated"):
+    os.mkdir("generated")
 start_time=time.time()
 return_code=os.system("node sequential.js")
 end_time=time.time()
 if return_code==0:
     print("Sequential.js finished")
     print("Sequential: ", round(end_time-start_time,3),"s")
-    
     print("Image Making: ",time.strftime("%Hh %Mm %SS",time.gmtime(round(end_time-start_time))))
     print("Starting make_video.py")
     start_time_1=time.time()

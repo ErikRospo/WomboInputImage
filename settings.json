@@ -1,8 +1,10 @@
 {
     "style": 18,
-    "file_folder": "1665168171899861132",
-    "prompt": "Cherry blossoms, over a bridge over lake, with a blue sky behind them. Photorealistic, detailed",
+    "file_folder": "1665278056721483200",
+    "prompt": "./lyrics.ly",
     "iterations": 100,
+    "repititions": 15,
+    "fps": 60,
     "quiet": false,
     "inter": false,
     "inputImages": []
