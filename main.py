@@ -1,5 +1,4 @@
 # imports and basic notebook setup
-from datetime import datetime
 from io import StringIO
 import os
 import numpy as np
@@ -9,7 +8,6 @@ from google.protobuf import text_format
 import json
 import caffe
 import cv2
-import time
 
 with open("settings.json","rt") as f:
     settings=json.load(f)
@@ -170,14 +168,17 @@ for i in range(int(settings['dream']['iterations'])):
     frame_i += 1
     
 
+paths=["frames/%04d.jpg"%i for i in range(0,100)]
 imgArray = []
 print("Starting reading")
+s=[970,1250]
 for filename in paths:
-    imgArray.append(cv2.imread(filename))
-        
+    if os.path.exists(filename):
+        imgArray.append(cv2.resize(cv2.imread(filename),s))
+print(s)
 print("done reading")
 print("writing video")
-out = cv2.VideoWriter(settings['dream']["output"]["video"]['path'],cv2.VideoWriter_fourcc(*settings['dream']["output"]["video"]['codec']),float(settings['dream']["output"]["video"]['fps']), [h,w])
+out = cv2.VideoWriter(settings['dream']["output"]["video"]['path'],cv2.VideoWriter_fourcc(*settings['dream']["output"]["video"]['codec']),float(settings['dream']["output"]["video"]['fps']), s)
 for i in range(len(imgArray)):
     out.write(imgArray[i])
 out.release()

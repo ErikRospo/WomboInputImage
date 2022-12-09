@@ -1,5 +1,4 @@
-frames/
-frames2/
+frames*/
 *.mp4
 dream.ipynb
 models
